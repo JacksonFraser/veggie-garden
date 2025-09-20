@@ -24,6 +24,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          NEXT_PUBLIC_CONVEX_URL: ${{ vars.NEXT_PUBLIC_CONVEX_URL }}
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
