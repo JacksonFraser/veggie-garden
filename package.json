@@ -1,12 +1,14 @@
 {
   "name": "veggie-garden-app",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,json}\"",
     "version:patch": "npm version patch && git push origin main --tags",
     "version:minor": "npm version minor && git push origin main --tags",
     "version:major": "npm version major && git push origin main --tags",
@@ -18,11 +20,13 @@
     "@react-three/fiber": "^9.3.0",
     "@tanstack/react-query": "^5.85.8",
     "@tanstack/react-query-devtools": "^5.85.8",
+    "clsx": "^2.1.1",
     "convex": "^1.26.2",
     "convex-helpers": "^0.1.104",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "tailwind-merge": "^3.3.1",
     "three": "^0.179.1",
     "zod": "^4.1.5"
   },
@@ -34,6 +38,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

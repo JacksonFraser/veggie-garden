@@ -1,8 +1,18 @@
-import { useState, useCallback } from "react";
-import { useCreateRaisedBed } from "@/lib/convex-hooks";
-import { Garden, BedSettings, BedPlacementResult, MATERIAL_COLORS, OptimisticRaisedBed } from "@/types";
-import { GardenId } from "@/types";
-import { safeValidateBedSettings, formatZodError, validateCoordinateBounds } from "@/lib/validation";
+import { useState, useCallback } from 'react';
+import { useCreateRaisedBed } from '@/lib/convex-hooks';
+import {
+  Garden,
+  BedSettings,
+  BedPlacementResult,
+  MATERIAL_COLORS,
+  OptimisticRaisedBed,
+} from '@/types';
+import { GardenId } from '@/types';
+import {
+  safeValidateBedSettings,
+  formatZodError,
+  validateCoordinateBounds,
+} from '@/lib/validation';
 
 interface UseRaisedBedPlacementProps {
   gardenId: GardenId;
@@ -14,7 +24,7 @@ interface UseRaisedBedPlacementReturn {
   optimisticBeds: OptimisticRaisedBed[];
   setNewBedSettings: React.Dispatch<React.SetStateAction<BedSettings>>;
   placeBed: (x: number, y: number) => Promise<BedPlacementResult>;
-  getMaterialColor: (material: "wood" | "stone" | "metal" | "composite") => string;
+  getMaterialColor: (material: 'wood' | 'stone' | 'metal' | 'composite') => string;
   validationErrors: string[];
   validateCurrentSettings: () => boolean;
 }
@@ -26,44 +36,41 @@ export function useRaisedBedPlacement({
   const createRaisedBed = useCreateRaisedBed();
   const [optimisticBeds, setOptimisticBeds] = useState<OptimisticRaisedBed[]>([]);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  
+
   const [newBedSettings, setNewBedSettings] = useState<BedSettings>({
-    name: "New Bed",
+    name: 'New Bed',
     width: 1.2,
     height: 2.4,
     bedHeight: 0.3,
-    material: "wood",
-    soilType: "garden soil",
+    material: 'wood',
+    soilType: 'garden soil',
   });
 
-  const getMaterialColor = useCallback(
-    (material: "wood" | "stone" | "metal" | "composite") => {
-      return MATERIAL_COLORS[material];
-    },
-    []
-  );
+  const getMaterialColor = useCallback((material: 'wood' | 'stone' | 'metal' | 'composite') => {
+    return MATERIAL_COLORS[material];
+  }, []);
 
   const validateCurrentSettings = useCallback(() => {
     setValidationErrors([]);
-    
+
     const validation = safeValidateBedSettings(newBedSettings);
     if (!validation.success) {
       setValidationErrors(formatZodError(validation.error));
       return false;
     }
-    
+
     return true;
   }, [newBedSettings]);
 
   const placeBed = useCallback(
     async (x: number, y: number): Promise<BedPlacementResult> => {
       if (!garden) {
-        return { success: false, error: "Garden not loaded" };
+        return { success: false, error: 'Garden not loaded' };
       }
 
       // Validate bed settings first
       if (!validateCurrentSettings()) {
-        return { success: false, error: "Invalid bed settings. Please fix the errors above." };
+        return { success: false, error: 'Invalid bed settings. Please fix the errors above.' };
       }
 
       // Validate bounds with Zod
@@ -74,10 +81,10 @@ export function useRaisedBedPlacement({
           width: newBedSettings.width,
           height: newBedSettings.height,
           gardenWidth: garden.width,
-          gardenHeight: garden.height
+          gardenHeight: garden.height,
         });
       } catch {
-        return { success: false, error: "Bed placement is outside garden bounds" };
+        return { success: false, error: 'Bed placement is outside garden bounds' };
       }
 
       const color = getMaterialColor(newBedSettings.material);
@@ -118,32 +125,22 @@ export function useRaisedBedPlacement({
         // Remove from optimistic state once real bed is created
         setOptimisticBeds((prev) =>
           prev.filter(
-            (b) =>
-              !(
-                b.x === roundedX &&
-                b.y === roundedY &&
-                b.name === optimisticBed.name
-              )
+            (b) => !(b.x === roundedX && b.y === roundedY && b.name === optimisticBed.name)
           )
         );
 
         return { success: true };
       } catch (error) {
-        console.error("Error placing bed:", error);
-        
+        console.error('Error placing bed:', error);
+
         // Remove optimistic bed on error
         setOptimisticBeds((prev) =>
           prev.filter(
-            (b) =>
-              !(
-                b.x === roundedX &&
-                b.y === roundedY &&
-                b.name === optimisticBed.name
-              )
+            (b) => !(b.x === roundedX && b.y === roundedY && b.name === optimisticBed.name)
           )
         );
 
-        return { success: false, error: "Failed to create raised bed" };
+        return { success: false, error: 'Failed to create raised bed' };
       }
     },
     [garden, gardenId, newBedSettings, getMaterialColor, createRaisedBed, validateCurrentSettings]

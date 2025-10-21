@@ -11,9 +11,8 @@ export type {
   BedSettings,
   PlantPlacementResult,
   BedPlacementResult,
-  OptimisticRaisedBed
-} from "@/types";
-
+  OptimisticRaisedBed,
+} from '@/types';
 
 export {
   MATERIAL_COLORS,
@@ -24,11 +23,11 @@ export {
   isValidCoordinate,
   isValidDimension,
   isValidPlantStatus,
-  isValidMaterial
-} from "@/types";
+  isValidMaterial,
+} from '@/types';
 
 // Re-import for legacy aliases
-import type { Plant, RaisedBed } from "@/types";
+import type { Plant, RaisedBed } from '@/types';
 
 // Legacy aliases for backward compatibility (temporary)
 export type PlantInstance = Plant;

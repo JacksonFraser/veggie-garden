@@ -1,7 +1,7 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { api } from "../../convex/_generated/api";
-import { GardenId } from "@/types";
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
+import { api } from '../../convex/_generated/api';
+import { GardenId } from '@/types';
 
 // Garden hooks
 export const useGardens = () => {
@@ -74,4 +74,3 @@ export const useSeedPlantTypes = () => {
     mutationFn: useConvexMutation(api.plantTypes.seed),
   });
 };
-

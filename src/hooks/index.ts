@@ -4,13 +4,13 @@ export { useRaisedBedPlacement } from './useRaisedBedPlacement';
 export { usePlantDragging } from './usePlantDragging';
 export { useCanvasDrawing } from './useCanvasDrawing';
 
-export type { 
+export type {
   Plant as PlantInstance,
   RaisedBed as RaisedBedInstance,
   Garden,
   BedSettings,
   PlantPlacementResult,
-  BedPlacementResult
+  BedPlacementResult,
 } from '@/types';
 
 export { MATERIAL_COLORS } from '@/types';

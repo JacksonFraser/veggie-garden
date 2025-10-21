@@ -1,8 +1,8 @@
-import { useCallback } from "react";
-import { useCreatePlant, usePlantTypes } from "@/lib/convex-hooks";
-import { RaisedBed, Garden, PlantPlacementResult, PlantType } from "@/types";
-import { GardenId } from "@/types";
-import { safeValidatePlantPlacement, validateCoordinateBounds } from "@/lib/validation";
+import { useCallback } from 'react';
+import { useCreatePlant, usePlantTypes } from '@/lib/convex-hooks';
+import { RaisedBed, Garden, PlantPlacementResult, PlantType } from '@/types';
+import { GardenId } from '@/types';
+import { safeValidatePlantPlacement, validateCoordinateBounds } from '@/lib/validation';
 
 interface UsePlantPlacementProps {
   gardenId: GardenId;
@@ -10,13 +10,8 @@ interface UsePlantPlacementProps {
   raisedBeds: RaisedBed[] | undefined;
 }
 
-
 interface UsePlantPlacementReturn {
-  placePlant: (
-    x: number,
-    y: number,
-    plantTypeName: string
-  ) => Promise<PlantPlacementResult>;
+  placePlant: (x: number, y: number, plantTypeName: string) => Promise<PlantPlacementResult>;
   getPlantType: (name: string) => PlantType | undefined;
   isPointInBed: (x: number, y: number, bed: RaisedBed) => boolean;
   findBedAtPoint: (x: number, y: number) => RaisedBed | undefined;
@@ -51,18 +46,18 @@ export function usePlantPlacement({
   const placePlant = useCallback(
     async (x: number, y: number, plantTypeName: string): Promise<PlantPlacementResult> => {
       if (!garden) {
-        return { success: false, error: "Garden not loaded" };
+        return { success: false, error: 'Garden not loaded' };
       }
 
       // Validate input parameters with Zod
       const placementValidation = safeValidatePlantPlacement({ x, y, plantTypeName });
       if (!placementValidation.success) {
-        return { success: false, error: "Invalid placement parameters" };
+        return { success: false, error: 'Invalid placement parameters' };
       }
 
       const plantType = getPlantType(plantTypeName);
       if (!plantType) {
-        return { success: false, error: "Plant type not found" };
+        return { success: false, error: 'Plant type not found' };
       }
 
       const spacing = plantType.spacing / 100;
@@ -77,10 +72,10 @@ export function usePlantPlacement({
           width: plantWidth,
           height: plantHeight,
           gardenWidth: garden.width,
-          gardenHeight: garden.height
+          gardenHeight: garden.height,
         });
       } catch {
-        return { success: false, error: "Plant placement is outside garden bounds" };
+        return { success: false, error: 'Plant placement is outside garden bounds' };
       }
 
       // Find which bed (if any) this plant is being placed in
@@ -109,10 +104,10 @@ export function usePlantPlacement({
               width: plantWidth,
               height: plantHeight,
               color: plantType.color,
-              status: "planned",
+              status: 'planned',
             });
           } else {
-            return { success: false, error: "Plant does not fit entirely within the bed" };
+            return { success: false, error: 'Plant does not fit entirely within the bed' };
           }
         } else {
           // Placing directly in garden soil (no raised bed)
@@ -125,14 +120,14 @@ export function usePlantPlacement({
             width: plantWidth,
             height: plantHeight,
             color: plantType.color,
-            status: "planned",
+            status: 'planned',
           });
         }
 
         return { success: true };
       } catch (error) {
-        console.error("Error placing plant:", error);
-        return { success: false, error: "Failed to create plant" };
+        console.error('Error placing plant:', error);
+        return { success: false, error: 'Failed to create plant' };
       }
     },
     [garden, gardenId, getPlantType, findBedAtPoint, createPlant]

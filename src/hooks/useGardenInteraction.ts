@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { Plant, RaisedBed } from "@/types";
+import { useState, useCallback } from 'react';
+import { Plant, RaisedBed } from '@/types';
 
 interface GardenInteractionState {
   selectedPlantType: string;
@@ -28,7 +28,7 @@ interface GardenInteractionActions {
 interface UseGardenInteractionReturn extends GardenInteractionState, GardenInteractionActions {}
 
 export function useGardenInteraction(): UseGardenInteractionReturn {
-  const [selectedPlantType, setSelectedPlantType] = useState<string>("");
+  const [selectedPlantType, setSelectedPlantType] = useState<string>('');
   const [isPlacing, setIsPlacing] = useState(false);
   const [isPlacingBed, setIsPlacingBed] = useState(false);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { ReactNode } from "react";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ConvexQueryClient } from "@convex-dev/react-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ReactNode } from 'react';
+import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { ConvexQueryClient } from '@convex-dev/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const convexQueryClient = new ConvexQueryClient(convex);

@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import { useUpdatePlant } from "@/lib/convex-hooks";
-import { Plant, Garden } from "@/types";
+import { useState, useCallback } from 'react';
+import { useUpdatePlant } from '@/lib/convex-hooks';
+import { Plant, Garden } from '@/types';
 
 interface DragState {
   isDragging: boolean;
@@ -16,11 +16,20 @@ interface UsePlantDraggingProps {
 }
 
 interface UsePlantDraggingReturn extends DragState {
-  startDrag: (e: React.MouseEvent<HTMLCanvasElement>, canvasRef: React.RefObject<HTMLCanvasElement | null>) => void;
-  updateDrag: (e: React.MouseEvent<HTMLCanvasElement>, canvasRef: React.RefObject<HTMLCanvasElement | null>) => void;
+  startDrag: (
+    e: React.MouseEvent<HTMLCanvasElement>,
+    canvasRef: React.RefObject<HTMLCanvasElement | null>
+  ) => void;
+  updateDrag: (
+    e: React.MouseEvent<HTMLCanvasElement>,
+    canvasRef: React.RefObject<HTMLCanvasElement | null>
+  ) => void;
   endDrag: () => void;
   findPlantAtPoint: (x: number, y: number) => Plant | undefined;
-  getCanvasCoordinates: (e: React.MouseEvent<HTMLCanvasElement>, canvasRef: React.RefObject<HTMLCanvasElement | null>) => { x: number; y: number };
+  getCanvasCoordinates: (
+    e: React.MouseEvent<HTMLCanvasElement>,
+    canvasRef: React.RefObject<HTMLCanvasElement | null>
+  ) => { x: number; y: number };
 }
 
 export function usePlantDragging({
@@ -35,14 +44,17 @@ export function usePlantDragging({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   const getCanvasCoordinates = useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement>, canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
+    (
+      e: React.MouseEvent<HTMLCanvasElement>,
+      canvasRef: React.RefObject<HTMLCanvasElement | null>
+    ) => {
       if (!canvasRef.current) return { x: 0, y: 0 };
-      
+
       const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
       const x = (e.clientX - rect.left) / scale;
       const y = (e.clientY - rect.top) / scale;
-      
+
       return { x, y };
     },
     [scale]
@@ -52,10 +64,7 @@ export function usePlantDragging({
     (x: number, y: number) => {
       return plants?.find((plant) => {
         return (
-          x >= plant.x &&
-          x <= plant.x + plant.width &&
-          y >= plant.y &&
-          y <= plant.y + plant.height
+          x >= plant.x && x <= plant.x + plant.width && y >= plant.y && y <= plant.y + plant.height
         );
       });
     },
@@ -63,7 +72,10 @@ export function usePlantDragging({
   );
 
   const startDrag = useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement>, canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
+    (
+      e: React.MouseEvent<HTMLCanvasElement>,
+      canvasRef: React.RefObject<HTMLCanvasElement | null>
+    ) => {
       const { x, y } = getCanvasCoordinates(e, canvasRef);
       const clickedPlant = findPlantAtPoint(x, y);
 
@@ -80,7 +92,10 @@ export function usePlantDragging({
   );
 
   const updateDrag = useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement>, canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
+    (
+      e: React.MouseEvent<HTMLCanvasElement>,
+      canvasRef: React.RefObject<HTMLCanvasElement | null>
+    ) => {
       if (!isDragging || !selectedPlant || !garden) return;
 
       const { x, y } = getCanvasCoordinates(e, canvasRef);
@@ -110,7 +125,7 @@ export function usePlantDragging({
         y: selectedPlant.y,
       });
     }
-    
+
     setIsDragging(false);
     setDragOffset({ x: 0, y: 0 });
   }, [isDragging, selectedPlant, updatePlant]);
