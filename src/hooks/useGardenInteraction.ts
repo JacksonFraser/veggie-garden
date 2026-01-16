@@ -1,8 +1,13 @@
 import { useState, useCallback } from 'react';
 import { Plant, RaisedBed } from '@/types';
 
+// State machine for placement mode - eliminates impossible states
+type PlacementMode = 'none' | 'plant' | 'bed';
+
 interface GardenInteractionState {
   selectedPlantType: string;
+  placementMode: PlacementMode;
+  // Derived state for backwards compatibility
   isPlacing: boolean;
   isPlacingBed: boolean;
   selectedPlant: Plant | null;
@@ -12,6 +17,8 @@ interface GardenInteractionState {
 
 interface GardenInteractionActions {
   setSelectedPlantType: (plantType: string) => void;
+  setPlacementMode: (mode: PlacementMode) => void;
+  // Keep these for backwards compatibility, but they now use the state machine
   setIsPlacing: (placing: boolean) => void;
   setIsPlacingBed: (placing: boolean) => void;
   setSelectedPlant: (plant: Plant | null) => void;
@@ -29,27 +36,36 @@ interface UseGardenInteractionReturn extends GardenInteractionState, GardenInter
 
 export function useGardenInteraction(): UseGardenInteractionReturn {
   const [selectedPlantType, setSelectedPlantType] = useState<string>('');
-  const [isPlacing, setIsPlacing] = useState(false);
-  const [isPlacingBed, setIsPlacingBed] = useState(false);
+  const [placementMode, setPlacementMode] = useState<PlacementMode>('none');
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [selectedBed, setSelectedBed] = useState<RaisedBed | null>(null);
   const [showPlantPanel, setShowPlantPanel] = useState(true);
 
+  // Derived state from placement mode
+  const isPlacing = placementMode === 'plant';
+  const isPlacingBed = placementMode === 'bed';
+
+  // Backwards compatibility setters that use the state machine
+  const setIsPlacing = useCallback((placing: boolean) => {
+    setPlacementMode(placing ? 'plant' : 'none');
+  }, []);
+
+  const setIsPlacingBed = useCallback((placing: boolean) => {
+    setPlacementMode(placing ? 'bed' : 'none');
+  }, []);
+
   const startPlantPlacement = useCallback(() => {
-    setIsPlacing(true);
-    setIsPlacingBed(false);
+    setPlacementMode('plant');
     setSelectedPlant(null);
   }, []);
 
   const startBedPlacement = useCallback(() => {
-    setIsPlacingBed(true);
-    setIsPlacing(false);
+    setPlacementMode('bed');
     setSelectedBed(null);
   }, []);
 
   const stopPlacement = useCallback(() => {
-    setIsPlacing(false);
-    setIsPlacingBed(false);
+    setPlacementMode('none');
   }, []);
 
   const selectPlant = useCallback((plant: Plant | null) => {
@@ -70,6 +86,7 @@ export function useGardenInteraction(): UseGardenInteractionReturn {
   return {
     // State
     selectedPlantType,
+    placementMode,
     isPlacing,
     isPlacingBed,
     selectedPlant,
@@ -77,6 +94,7 @@ export function useGardenInteraction(): UseGardenInteractionReturn {
     showPlantPanel,
     // Actions
     setSelectedPlantType,
+    setPlacementMode,
     setIsPlacing,
     setIsPlacingBed,
     setSelectedPlant,

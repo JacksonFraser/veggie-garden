@@ -38,6 +38,13 @@ export function GardenDesigner({ gardenId }: GardenDesignerProps) {
   const plantPlacement = usePlantPlacement({ gardenId: gardenId as GardenId, garden, raisedBeds });
   const bedPlacement = useRaisedBedPlacement({ gardenId: gardenId as GardenId, garden });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const plantDragging = usePlantDragging({
+    garden,
+    plants,
+    selectedPlant: interaction.selectedPlant,
+    setSelectedPlant: interaction.selectPlant,
+    scale: CANVAS_SCALE,
+  });
   // Sets up canvas drawing with useEffect inside the hook
   useCanvasDrawing({
     canvasRef,
@@ -47,17 +54,9 @@ export function GardenDesigner({ gardenId }: GardenDesignerProps) {
     optimisticBeds: bedPlacement.optimisticBeds,
     selectedPlant: interaction.selectedPlant,
     selectedBed: interaction.selectedBed,
-    isDragging: false, // will be updated when dragging starts
+    isDragging: plantDragging.isDragging,
     scale: CANVAS_SCALE,
   });
-  const plantDragging = usePlantDragging({
-    garden,
-    plants,
-    selectedPlant: interaction.selectedPlant,
-    setSelectedPlant: interaction.selectPlant,
-    scale: CANVAS_SCALE,
-  });
-
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!garden || !canvasRef.current) return;
 

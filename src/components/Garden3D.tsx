@@ -13,6 +13,44 @@ import { Plant, PlantType, RaisedBed, GardenId } from '@/types';
 import { plantColors, colors } from '@/lib/design-tokens';
 import { GardenCard } from '@/components/ui';
 
+// Plant 3D configuration - single source of truth for plant rendering
+type PlantGeometry = 'cylinder' | 'sphere' | 'cone' | 'box';
+
+interface PlantConfig {
+  height: number;
+  geometry: PlantGeometry;
+  color: string;
+}
+
+const PLANT_3D_CONFIG: Record<string, PlantConfig> = {
+  tomato: { height: 2, geometry: 'cylinder', color: plantColors.tomato },
+  pepper: { height: 1.5, geometry: 'cylinder', color: plantColors.pepper },
+  lettuce: { height: 0.3, geometry: 'sphere', color: plantColors.lettuce },
+  spinach: { height: 0.2, geometry: 'sphere', color: plantColors.spinach },
+  carrot: { height: 0.8, geometry: 'cone', color: plantColors.carrot },
+  radish: { height: 0.4, geometry: 'cone', color: plantColors.radish },
+  cucumber: { height: 1, geometry: 'box', color: plantColors.cucumber },
+  broccoli: { height: 0.6, geometry: 'sphere', color: plantColors.broccoli },
+  onion: { height: 0.3, geometry: 'sphere', color: plantColors.onion },
+  bean: { height: 1.2, geometry: 'cylinder', color: plantColors.bean },
+} as const;
+
+const DEFAULT_PLANT_CONFIG: PlantConfig = {
+  height: 1,
+  geometry: 'box',
+  color: plantColors.default,
+};
+
+function getPlantConfig(plantName: string | undefined): PlantConfig {
+  if (!plantName) return DEFAULT_PLANT_CONFIG;
+  const key = plantName.toLowerCase();
+  // Check for partial matches (e.g., "Cherry Tomato" matches "tomato")
+  for (const [name, config] of Object.entries(PLANT_3D_CONFIG)) {
+    if (key.includes(name)) return config;
+  }
+  return DEFAULT_PLANT_CONFIG;
+}
+
 interface Garden3DProps {
   gardenId: GardenId;
 }
@@ -32,58 +70,11 @@ interface GardenSceneProps {
 }
 
 function PlantModel({ plant, plantType, raisedBeds }: PlantModelProps) {
-  const height = useMemo(() => {
-    switch (plantType?.name) {
-      case 'Tomato':
-        return 2;
-      case 'Pepper':
-        return 1.5;
-      case 'Lettuce':
-        return 0.3;
-      case 'Spinach':
-        return 0.2;
-      case 'Carrot':
-        return 0.8;
-      case 'Radish':
-        return 0.4;
-      default:
-        return 1;
-    }
-  }, [plantType?.name]);
+  const config = useMemo(() => getPlantConfig(plantType?.name), [plantType?.name]);
 
-  const geometry = useMemo(() => {
-    switch (plantType?.name) {
-      case 'Tomato':
-      case 'Pepper':
-        return 'cylinder';
-      case 'Lettuce':
-      case 'Spinach':
-        return 'sphere';
-      case 'Carrot':
-      case 'Radish':
-        return 'cone';
-      default:
-        return 'box';
-    }
-  }, [plantType?.name]);
-
-  const plantColor = useMemo(() => {
-    if (plant.color) return plant.color;
-
-    const lowerName = plantType?.name?.toLowerCase() || '';
-    if (lowerName.includes('tomato')) return plantColors.tomato;
-    if (lowerName.includes('lettuce')) return plantColors.lettuce;
-    if (lowerName.includes('carrot')) return plantColors.carrot;
-    if (lowerName.includes('pepper')) return plantColors.pepper;
-    if (lowerName.includes('cucumber')) return plantColors.cucumber;
-    if (lowerName.includes('broccoli')) return plantColors.broccoli;
-    if (lowerName.includes('spinach')) return plantColors.spinach;
-    if (lowerName.includes('radish')) return plantColors.radish;
-    if (lowerName.includes('onion')) return plantColors.onion;
-    if (lowerName.includes('bean')) return plantColors.bean;
-
-    return plantColors.default;
-  }, [plant.color, plantType?.name]);
+  const height = config.height;
+  const geometry = config.geometry;
+  const plantColor = plant.color || config.color;
 
   // Find the bed this plant is in (if any)
   const bed = plant.raisedBedId ? raisedBeds?.find((b) => b._id === plant.raisedBedId) : null;

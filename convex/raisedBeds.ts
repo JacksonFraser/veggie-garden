@@ -76,29 +76,20 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("raisedBeds") },
   handler: async (ctx, args) => {
-    // First, update all plants in this bed to remove the bed reference
-    const plantsInBed = await ctx.db
-      .query("plants")
-      .withIndex("by_bed", (q) => q.eq("raisedBedId", args.id))
-      .collect();
-    
-    for (const plant of plantsInBed) {
-      await ctx.db.patch(plant._id, { raisedBedId: undefined });
-    }
-    
-    // Then delete the bed
+    // Cascade behavior (orphaning plants) is handled by trigger in functions.ts
     return await ctx.db.delete(args.id);
   },
 });
 
 // Get material color defaults
+// Note: Keep in sync with src/lib/design-tokens.ts materialColors
 export const getMaterialDefaults = query({
   handler: async () => {
     return {
-      wood: "#8B4513",
-      stone: "#696969",
-      metal: "#708090",
-      composite: "#654321",
+      wood: '#8B4513',
+      stone: '#696969',
+      metal: '#708090',
+      composite: '#654321',
     };
   },
 });

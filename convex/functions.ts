@@ -10,49 +10,42 @@ const triggers = new Triggers<DataModel>();
 triggers.register("gardens", async (ctx, change) => {
   if (change.operation === "delete") {
     const gardenId = change.id;
-    
-    console.log(`Garden ${gardenId} deleted, cascading deletes...`);
-    
+
     // Delete all plants in this garden
     const plants = await ctx.db
       .query("plants")
       .filter((q) => q.eq(q.field("gardenId"), gardenId))
       .collect();
-    
-    console.log(`Deleting ${plants.length} plants from garden ${gardenId}`);
+
     for (const plant of plants) {
       await ctx.db.delete(plant._id);
     }
-    
+
     // Delete all raised beds in this garden
     const raisedBeds = await ctx.db
       .query("raisedBeds")
       .filter((q) => q.eq(q.field("gardenId"), gardenId))
       .collect();
-    
-    console.log(`Deleting ${raisedBeds.length} raised beds from garden ${gardenId}`);
+
     for (const bed of raisedBeds) {
       await ctx.db.delete(bed._id);
     }
   }
 });
 
-// Cascade delete: when a raised bed is deleted, delete all plants in that bed
+// Cascade: when a raised bed is deleted, orphan plants (remove bed reference, keep plants)
 triggers.register("raisedBeds", async (ctx, change) => {
   if (change.operation === "delete") {
     const bedId = change.id;
-    
-    console.log(`Raised bed ${bedId} deleted, deleting plants in bed...`);
-    
-    // Delete all plants in this raised bed
+
+    // Orphan plants by removing bed reference (don't delete them)
     const plantsInBed = await ctx.db
       .query("plants")
       .filter((q) => q.eq(q.field("raisedBedId"), bedId))
       .collect();
-    
-    console.log(`Deleting ${plantsInBed.length} plants from raised bed ${bedId}`);
+
     for (const plant of plantsInBed) {
-      await ctx.db.delete(plant._id);
+      await ctx.db.patch(plant._id, { raisedBedId: undefined });
     }
   }
 });

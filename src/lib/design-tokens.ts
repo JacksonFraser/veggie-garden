@@ -188,6 +188,20 @@ export const breakpoints = {
 } as const;
 
 // ============================================================================
+// MATERIAL COLORS (for raised beds)
+// Note: Keep in sync with convex/raisedBeds.ts getMaterialDefaults if changed
+// ============================================================================
+
+export const materialColors = {
+  wood: '#8B4513',
+  stone: '#696969',
+  metal: '#708090',
+  composite: '#654321',
+} as const;
+
+export type MaterialType = keyof typeof materialColors;
+
+// ============================================================================
 // PLANT COLORS (for Garden3D component)
 // ============================================================================
 

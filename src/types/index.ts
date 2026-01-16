@@ -49,13 +49,9 @@ export interface BedPlacementResult {
   error?: string;
 }
 
-// Material colors mapping
-export const MATERIAL_COLORS = {
-  wood: '#8B4513',
-  stone: '#696969',
-  metal: '#708090',
-  composite: '#654321',
-} as const;
+// Material colors - re-exported from design-tokens (single source of truth)
+export { materialColors as MATERIAL_COLORS } from '@/lib/design-tokens';
+export type { MaterialType } from '@/lib/design-tokens';
 
 // Canvas/UI constants
 export const CANVAS_SCALE = 30;
